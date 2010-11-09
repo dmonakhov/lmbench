@@ -3,7 +3,7 @@ LMBench + quota tests
 To run the quota benchmarks, you should be able to say:
 
 	mkdir /tmp/{img,mnt}
-	./quota-run-all.sh
+	./quota-run-all.sh <RESULT_DIR>
 
 To run the benchmark, you should be able to say:
 
