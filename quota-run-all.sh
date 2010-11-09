@@ -11,7 +11,7 @@ IMG=/tmp/img
 MNT=/tmp/mnt
 BIN_PATH="./bin/x86_64-linux-gnu"
 TESTS="lat_fs_open_close lat_fs_create_unlink lat_fs_chown lat_fs_write_truncate"
-TST_OPTS=" -I -U -L -w -W 3 " 
+TST_OPTS=" -I -U -L 2 -w -W 3 " 
 #OPTS=" -I  -L -w -W 3 " 
 
 

@@ -1,4 +1,9 @@
-README for lmbench 2alpha8 net release.
+LMBench + quota tests
+
+To run the quota benchmarks, you should be able to say:
+
+	mkdir /tmp/{img,mnt}
+	./quota-run-all.sh
 
 To run the benchmark, you should be able to say:
 
