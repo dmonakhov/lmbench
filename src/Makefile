@@ -74,6 +74,8 @@ SRCS =  bw_file_rd.c bw_mem.c bw_mmap_rd.c bw_pipe.c bw_tcp.c bw_udp.c	\
 	lib_udp.c lib_unix.c lib_sched.c				\
 	line.c lmdd.c lmhttp.c par_mem.c par_ops.c loop_o.c memsize.c 	\
 	mhz.c msleep.c rhttp.c seek.c timing_o.c tlb.c stream.c		\
+	lat_fs_open_close.c lat_fs_create_unlink.c lat_fs_chown.c \
+	lat_fs_write_truncate.c \
 	bench.h lib_debug.h lib_tcp.h lib_udp.h lib_unix.h names.h 	\
 	stats.h timing.h version.h
 
@@ -103,7 +105,12 @@ EXES =	$O/bw_file_rd $O/bw_mem $O/bw_mmap_rd $O/bw_pipe $O/bw_tcp 	\
 	$O/msleep $O/loop_o $O/lat_fifo $O/lmhttp $O/lat_http		\
 	$O/lat_fcntl $O/disk $O/lat_unix_connect $O/flushdisk		\
 	$O/lat_ops $O/line $O/tlb $O/par_mem $O/par_ops 		\
-	$O/stream
+	$O/stream \
+	$O/lat_fs_open_close \
+	$O/lat_fs_create_unlink \
+	$O/lat_fs_chown \
+	$O/lat_fs_write_truncate 
+
 OPT_EXES=$O/cache $O/lat_dram_page $O/lat_pmake $O/lat_rand 		\
 	$O/lat_usleep $O/lat_cmd
 LIBOBJS= $O/lib_tcp.o $O/lib_udp.o $O/lib_unix.o $O/lib_timing.o 	\
@@ -326,6 +333,23 @@ $O/lat_unix_connect:  lat_unix_connect.c lib_tcp.c bench.h lib_tcp.h timing.h st
 $O/lat_fs.s:lat_fs.c timing.h stats.h bench.h
 $O/lat_fs:  lat_fs.c timing.h stats.h bench.h $O/lmbench.a
 	$(COMPILE) -o $O/lat_fs lat_fs.c $O/lmbench.a $(LDLIBS)
+
+$O/lat_fs_open_close:  lat_fs_open_close.c timing.h stats.h bench.h \
+	$O/lmbench.a
+	$(COMPILE) -o $O/lat_fs_open_close lat_fs_open_close.c $O/lmbench.a $(LDLIBS)
+
+$O/lat_fs_create_unlink:  lat_fs_create_unlink.c timing.h stats.h bench.h \
+	$O/lmbench.a
+	$(COMPILE) -o $O/lat_fs_create_unlink lat_fs_create_unlink.c $O/lmbench.a $(LDLIBS)
+
+$O/lat_fs_chown:  lat_fs_chown.c timing.h stats.h bench.h \
+	$O/lmbench.a
+	$(COMPILE) -o $O/lat_fs_chown lat_fs_chown.c $O/lmbench.a $(LDLIBS)
+
+$O/lat_fs_write_truncate:  lat_fs_write_truncate.c timing.h stats.h bench.h \
+	$O/lmbench.a
+	$(COMPILE) -o $O/lat_fs_write_truncate lat_fs_write_truncate.c $O/lmbench.a $(LDLIBS)
+
 
 $O/lat_fcntl.s:lat_fcntl.c timing.h stats.h bench.h
 $O/lat_fcntl:  lat_fcntl.c timing.h stats.h bench.h $O/lmbench.a

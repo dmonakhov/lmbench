@@ -543,6 +543,64 @@ benchmp_childid()
 	return _benchmp_child_state.childid;
 }
 
+inline int benchmp_childid_uid()
+{
+	return (benchmp_childid() << 3) + 100;
+}
+inline int benchmp_childid_gid()
+{
+	return benchmp_childid_uid();
+}
+/*
+ * Open file with following uid/gid, and unlink it,
+ * inode's data will be held until file close.
+ */
+
+int get_quota(char *file, int uid, int gid)
+{
+	int fd;
+	int ret;
+	fd = open(file, O_WRONLY|O_CREAT, 0666);
+	if (fd < 0)
+		return fd;
+	ret = fchown(fd, uid, gid);
+	if (ret) {
+		close(fd);
+		unlink(file);
+		return ret;
+	}
+	unlink(file);
+	return fd;
+}
+/* Create files with given quotas several times
+ * Since each file opened for write result in increasing quota obj refcount
+ * We may assumes what: dqobj.ref_cnt >= num
+ * quota object ref_cnt does matter because result in various implicit
+ * actions
+ *
+ * 1) During transition from 0->1 and 1->0 may result in quota related IO
+ *    due to quota_acquire or quota_release()
+ * 2) 1->2 and 2->1 may result in various locking interactions
+ * 3) (Common case) Usually each quota object is held by many inodes,
+ *     so it's ref_cnt is big. This makes reasonable for kernel to optimize
+ *     that case.
+ */
+int get_quota_n(char *file, int uid, int gid, int *fd, int num)
+{
+	int i,j, err = 0;
+	for (i = 0; i < num; i++) {
+		fd[i] = get_quota(file, uid, gid);
+		if (fd[i] < 0) {
+			err = fd[i];
+			goto cleanup;
+		}
+	}
+	return 0;
+cleanup:
+	for (j = 0; j < i; j++)
+		close(fd[j]);
+	return err;
+}
 void
 benchmp_child_sigchld(int signo)
 {
@@ -1045,6 +1103,26 @@ micromb(uint64 sz, uint64 n)
 		fprintf(ftiming, "%.6f %.3f\n", mb, micro);
 	}
 }
+
+void
+mili_op(char *s, uint64 n, int par)
+{
+	struct timeval td;
+	double	micro;
+	double	mop;
+
+	tvsub(&td, &stop_tv, &start_tv);
+	micro = td.tv_sec * 1000 + td.tv_usec/1000;
+	mop = (double)n / (micro + 1);
+	micro /= n;
+	n *= 1000;
+	if (micro == 0.0) return;
+	if (!ftiming) ftiming = stderr;
+	fprintf(ftiming, "%s latency %.4f, parallel %d, loops %.4f, "
+		"total_loops %.4f\n", s, micro, par, mop, mop * par);
+}
+
+
 
 void
 milli(char *s, uint64 n)
