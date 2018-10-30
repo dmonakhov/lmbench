@@ -543,11 +543,11 @@ benchmp_childid()
 	return _benchmp_child_state.childid;
 }
 
-inline int benchmp_childid_uid()
+int benchmp_childid_uid()
 {
 	return (benchmp_childid() << 3) + 100;
 }
-inline int benchmp_childid_gid()
+int benchmp_childid_gid()
 {
 	return benchmp_childid_uid();
 }
