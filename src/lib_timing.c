@@ -543,14 +543,6 @@ benchmp_childid()
 	return _benchmp_child_state.childid;
 }
 
-inline int benchmp_childid_uid()
-{
-	return (benchmp_childid() << 3) + 100;
-}
-inline int benchmp_childid_gid()
-{
-	return benchmp_childid_uid();
-}
 /*
  * Open file with following uid/gid, and unlink it,
  * inode's data will be held until file close.

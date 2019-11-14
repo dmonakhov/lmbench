@@ -314,6 +314,15 @@ extern iter_t benchmp_interval(void* _state);
  */
 extern int benchmp_childid();
 
+inline int benchmp_childid_uid()
+{
+	return (benchmp_childid() << 3) + 100;
+}
+inline int benchmp_childid_gid()
+{
+	return benchmp_childid_uid();
+}
+
 /*
  * harvest dead children to prevent zombies
  */
